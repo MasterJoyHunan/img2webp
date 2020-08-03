@@ -1,6 +1,7 @@
 package img2webp
 
 import (
+	"archive/zip"
 	"bytes"
 	"errors"
 	"github.com/chai2010/webp"
@@ -8,10 +9,13 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -67,4 +71,37 @@ func WebpEncoder(f *multipart.FileHeader, quality float32, path string) (err err
 	return nil
 }
 
+// 压缩打包
+func Zip(dir string) {
+	fz, err := os.Create(dir + ".zip")
+	if err != nil {
+		log.Fatalf("Create zip file failed: %s\n", err.Error())
+	}
+	defer fz.Close()
 
+	w := zip.NewWriter(fz)
+	defer w.Close()
+
+	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		fDest, err := w.Create(path[len(dir)+1:])
+		if err != nil {
+			log.Printf("Create failed: %s\n", err.Error())
+			return nil
+		}
+		fSrc, err := os.Open(path)
+		if err != nil {
+			log.Printf("Open failed: %s\n", err.Error())
+			return nil
+		}
+		defer fSrc.Close()
+		_, err = io.Copy(fDest, fSrc)
+		if err != nil {
+			log.Printf("Copy failed: %s\n", err.Error())
+			return nil
+		}
+		return nil
+	})
+}
