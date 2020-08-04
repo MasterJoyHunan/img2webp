@@ -49,9 +49,7 @@ func WebpEncoder(f *multipart.FileHeader, quality float32, path string) (err err
 		return
 	}
 	if img == nil {
-		msg := "image not supported"
-		err = errors.New(msg)
-		return
+		return errors.New("image not supported")
 	}
 
 	if err = webp.Encode(&buf, img, &webp.Options{Lossless: false, Quality: quality}); err != nil {
@@ -60,7 +58,7 @@ func WebpEncoder(f *multipart.FileHeader, quality float32, path string) (err err
 
 	toPath := path + "/" + fileName + ".webp"
 	if _, err = os.Stat(path); os.IsNotExist(err) {
-		if err = os.Mkdir(path, os.ModePerm); err != nil {
+		if err = os.MkdirAll(path, os.ModePerm); err != nil {
 			return
 		}
 	}
@@ -72,7 +70,12 @@ func WebpEncoder(f *multipart.FileHeader, quality float32, path string) (err err
 
 // 压缩打包
 func Zip(dir string) (err error) {
-	fz, err := os.Create(dir + ".zip")
+	if _, err = os.Stat("webp_zip"); os.IsNotExist(err) {
+		if err = os.MkdirAll("webp_zip", os.ModePerm); err != nil {
+			return
+		}
+	}
+	fz, err := os.Create("webp_zip/"+ dir + ".zip")
 	if err != nil {
 		return
 	}
@@ -85,7 +88,7 @@ func Zip(dir string) (err error) {
 		if info.IsDir() {
 			return nil
 		}
-		fDest, err := w.Create(path[len(dir)-1:])
+		fDest, err := w.Create(path[len(dir)+1:])
 		if err != nil {
 			return err
 		}

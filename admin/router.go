@@ -18,5 +18,6 @@ func InitRouter() *gin.Engine {
 
 	r.GET("/history", History)
 	r.POST("/upload", Upload)
+	r.GET("/download", Download)
 	return r
 }
