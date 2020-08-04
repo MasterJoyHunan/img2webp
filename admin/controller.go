@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"math/rand"
 	"time"
 )
 
@@ -43,10 +44,16 @@ func Upload(c *gin.Context) {
 	}
 
 	// 压缩打包
-	Zip(dir)
+	err = Zip(dir)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	//
 
 	zip, err := ioutil.ReadFile(dir + ".zip")
 	c.Header("content-type", "application/zip")
-	c.Header("content-disposition", fmt.Sprintf("attachment; filename=\"%d.zip\"", time.Now().Unix()))
+	c.Header("content-disposition", fmt.Sprintf("attachment; filename=\"%s_%d.zip\"", time.Now().Format("2006-01-02 15:04:05"), rand.Int()))
 	c.Writer.Write(zip)
 }

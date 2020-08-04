@@ -11,7 +11,6 @@ import (
 	"image/png"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -72,36 +71,39 @@ func WebpEncoder(f *multipart.FileHeader, quality float32, path string) (err err
 }
 
 // 压缩打包
-func Zip(dir string) {
+func Zip(dir string) (err error) {
 	fz, err := os.Create(dir + ".zip")
 	if err != nil {
-		log.Fatalf("Create zip file failed: %s\n", err.Error())
+		return
 	}
 	defer fz.Close()
 
 	w := zip.NewWriter(fz)
 	defer w.Close()
 
-	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return nil
 		}
-		fDest, err := w.Create(path[len(dir)+1:])
+		fDest, err := w.Create(path[len(dir)-1:])
 		if err != nil {
-			log.Printf("Create failed: %s\n", err.Error())
-			return nil
+			return err
 		}
 		fSrc, err := os.Open(path)
 		if err != nil {
-			log.Printf("Open failed: %s\n", err.Error())
-			return nil
+			return err
 		}
 		defer fSrc.Close()
+
 		_, err = io.Copy(fDest, fSrc)
 		if err != nil {
-			log.Printf("Copy failed: %s\n", err.Error())
-			return nil
+			return err
 		}
 		return nil
 	})
+	if err != nil {
+		return
+	}
+
+	return nil
 }
