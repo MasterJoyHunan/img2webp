@@ -27,7 +27,7 @@ func ErrorHandle() gin.HandlerFunc {
 		c.AbortWithStatusJSON(500, gin.H{
 			"code": 500,
 			"data": "",
-			"msg":  "系统错误",
+			"msg":  "系统错误: " + c.Errors.Last().Error(),
 		})
 		return
 	}

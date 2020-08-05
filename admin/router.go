@@ -16,8 +16,8 @@ func InitRouter() *gin.Engine {
 		ErrorHandle(),              // 错误处理
 	)
 
+	r.Static("/download", "./webp_zip")
 	r.GET("/history", History)
 	r.POST("/upload", Upload)
-	r.GET("/download", Download)
 	return r
 }

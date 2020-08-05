@@ -12,6 +12,7 @@
     "clipboard": "^2.0.6",
     "core-js": "^3.6.4",
     "element-ui": "^2.13.2",
+    "lodash.debounce": "^4.0.8",
     "vue": "^2.6.11"
   },
   "devDependencies": {

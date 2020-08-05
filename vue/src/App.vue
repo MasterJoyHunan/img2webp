@@ -5,6 +5,8 @@
                        drag
                        action="/api/upload"
                        :show-file-list="false"
+                       :auto-upload="false"
+                       :on-change="onChange"
                        :on-success="handleSuccess"
                        multiple>
                 <i class="el-icon-upload"></i>
@@ -54,12 +56,26 @@
 
 <script>
 import request from 'axios'
+import debounce from 'lodash.debounce'
 export default {
     name: 'App',
     data() {
         return {
             currentUrl: '',
-            list: []
+            list: [],
+            layzUpload: debounce(async (fileList) => {
+                let files = new FormData()
+                fileList.forEach(f => {
+                    files.append("file", f.raw)
+                })
+                const { data } = await request.post('/api/upload', files)
+                if (data.code != 1) {
+                    this.$message.error(data.msg)
+                    return
+                }
+                this.currentUrl = data.data
+                this.list.unshift({ file: data.data })
+            }, 100)
         }
     },
     async created() {
@@ -82,9 +98,11 @@ export default {
                 this.$message.error(res.msg)
             }
         },
+        onChange(file, fileList) {
+            this.layzUpload(fileList)
+        },
         handleDownload(file) {
-            console.log(file)
-            window.open("www.baidu.com")
+            window.open("/api/download/" + file)
         }
     }
 }
@@ -101,6 +119,7 @@ body {
 .copy {
     flex: 1;
     padding: 20px;
+    padding-right: 0;
     display: flex;
 }
 .his {
