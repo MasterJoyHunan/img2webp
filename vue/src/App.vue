@@ -57,6 +57,7 @@
 <script>
 import request from 'axios'
 import debounce from 'lodash.debounce'
+import { Loading } from 'element-ui';
 export default {
     name: 'App',
     data() {
@@ -64,15 +65,23 @@ export default {
             currentUrl: '',
             list: [],
             layzUpload: debounce(async (fileList) => {
+                const loading = Loading.service({
+                    lock: true,
+                    text: '图片上传中，请等待',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                })
                 let files = new FormData()
                 fileList.forEach(f => {
                     files.append("file", f.raw)
                 })
                 const { data } = await request.post('/api/upload', files)
+                loading.close()
                 if (data.code != 1) {
                     this.$message.error(data.msg)
                     return
                 }
+                this.$message.success('转换成功，请点击下载')
                 this.currentUrl = data.data
                 this.list.unshift({ file: data.data })
             }, 100)
