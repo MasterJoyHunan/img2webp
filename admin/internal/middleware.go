@@ -1,8 +1,9 @@
-package img2webp
+package internal
 
 import (
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gin-gonic/gin"
 )
 
 func NoFound() gin.HandlerFunc {
@@ -13,7 +14,6 @@ func NoFound() gin.HandlerFunc {
 		}
 	}
 }
-
 
 func ErrorHandle() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -29,7 +29,5 @@ func ErrorHandle() gin.HandlerFunc {
 			"data": "",
 			"msg":  "系统错误: " + c.Errors.Last().Error(),
 		})
-		return
 	}
 }
-

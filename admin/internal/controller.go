@@ -1,15 +1,15 @@
-package img2webp
+package internal
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis/v8"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 )
 
 // 历史记录
@@ -76,17 +76,4 @@ func Upload(c *gin.Context) {
 		"data": bashDir + ".zip",
 		"msg":  "success",
 	})
-}
-
-// 下载
-func Download(c *gin.Context) {
-	filename := c.Query("filename")
-	zip, err := ioutil.ReadFile("webp_zip/" + filename)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-	c.Header("content-type", "application/zip")
-	c.Header("content-disposition", fmt.Sprintf("attachment; filename=\"%s.zip\"", filename))
-	c.Writer.Write(zip)
 }

@@ -1,9 +1,7 @@
-package img2webp
+package internal
 
 import (
 	"github.com/gin-gonic/gin"
-	//"tc/controller"
-	//"tc/middleware"
 )
 
 func InitRouter() *gin.Engine {
@@ -11,9 +9,9 @@ func InitRouter() *gin.Engine {
 
 	// 加入通用中间件
 	r.Use(
-		gin.Recovery(),             // recovery 防止程序奔溃
-		NoFound(),					// 404
-		ErrorHandle(),              // 错误处理
+		gin.Recovery(), // recovery 防止程序奔溃
+		NoFound(),      // 404
+		ErrorHandle(),  // 错误处理
 	)
 
 	r.Static("/download", "./webp_zip")

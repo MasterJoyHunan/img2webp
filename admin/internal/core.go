@@ -1,10 +1,9 @@
-package img2webp
+package internal
 
 import (
 	"archive/zip"
 	"bytes"
 	"errors"
-	"github.com/chai2010/webp"
 	"image"
 	"image/gif"
 	"image/jpeg"
@@ -16,6 +15,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/chai2010/webp"
 )
 
 // 将图片转换为 webp 格式  quality 默认 80
@@ -75,7 +76,7 @@ func Zip(dir string) (err error) {
 			return
 		}
 	}
-	fz, err := os.Create("webp_zip/"+ dir + ".zip")
+	fz, err := os.Create("webp_zip/" + dir + ".zip")
 	if err != nil {
 		return
 	}
